@@ -1,0 +1,632 @@
+app:
+  description: 审核广告内容是否违规并进行风格改写
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  mode: workflow
+  name: 电商广告合规审查与安全改写 Agent
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.24@9e12eef09973667f0eaf4f082af883167e1de88740b22e71e71488d020c3778a
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/siliconflow:0.0.61@f0952b183715405503a23ccef015e5d43948591fd10b60690f24c07873eed723
+    version: null
+kind: app
+version: 0.7.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload: {}
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: start
+        targetType: code
+      id: 1792217919107-source-1792218282500-target
+      source: '1792217919107'
+      sourceHandle: source
+      target: '1792218282500'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: code
+        targetType: knowledge-retrieval
+      id: 1792218282500-source-1792218623590-target
+      source: '1792218282500'
+      sourceHandle: source
+      target: '1792218623590'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: knowledge-retrieval
+        targetType: if-else
+      id: 1792218623590-source-1792218688299-target
+      source: '1792218623590'
+      sourceHandle: source
+      target: '1792218688299'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: if-else
+        targetType: llm
+      id: 1792218688299-false-1792219060973-target
+      source: '1792218688299'
+      sourceHandle: 'false'
+      target: '1792219060973'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: if-else
+        targetType: llm
+      id: 1792218688299-true-1792218775659-target
+      source: '1792218688299'
+      sourceHandle: 'true'
+      target: '1792218775659'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: llm
+      id: 1792218775659-source-1792220864992-target
+      source: '1792218775659'
+      sourceHandle: source
+      target: '1792220864992'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: end
+      id: 1792219060973-source-1792219178732-target
+      source: '1792219060973'
+      sourceHandle: source
+      target: '1792219178732'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: llm
+      id: 1792220864992-source-1792220907616-target
+      source: '1792220864992'
+      sourceHandle: source
+      target: '1792220907616'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: end
+      id: 1792220907616-source-1792219142935-target
+      source: '1792220907616'
+      sourceHandle: source
+      target: '1792219142935'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: 待审查营销文案
+          options: []
+          placeholder: ''
+          required: true
+          type: paragraph
+          variable: raw_text
+        - hint: ''
+          label: 目标发布平台
+          options:
+          - 小红书
+          - 抖音
+          - 微信
+          - 淘宝
+          placeholder: ''
+          required: false
+          type: select
+          variable: platform
+        - hint: ''
+          label: 商品所属类目
+          options:
+          - 美妆个护
+          - 食品生鲜
+          - 3C数码
+          - 通用类目
+          placeholder: ''
+          required: false
+          type: select
+          variable: category
+      height: 160
+      id: '1792217919107'
+      position:
+        x: 24.617863349121933
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 24.617863349121933
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        code: "import re\nimport unicodedata\n\ndef main(text: str = \"\", **kwargs)\
+          \ -> dict:\n    # 自动兼容 text 或 raw_text 传入\n    raw_text = text if text else\
+          \ kwargs.get(\"raw_text\", \"\")\n    \n    if not raw_text:\n        return\
+          \ {\n            \"has_violation\": False,\n            \"matched_words\"\
+          : [],\n            \"violation_count\": 0,\n            \"est_fine\": \"\
+          0 元\",\n            \"risk_level\": \"正常\"\n        }\n\n    # 1. 对抗清洗层\
+          \ 1: Unicode NFKC 标准化 (将 ①、❶、全角数字等统一转为标准字符)\n    normalized = unicodedata.normalize('NFKC',\
+          \ str(raw_text))\n\n    # 2. 对抗清洗层 2: 拼音与常见作弊变体映射\n    pinyin_map = {\n\
+          \        \"die一\": \"第一\",\n        \"di一\": \"第一\",\n        \"d1\": \"\
+          第一\",\n        \"ding级\": \"顶级\",\n        \"v信\": \"微信\",\n        \"vx\"\
+          : \"微信\"\n    }\n    for variant, standard in pinyin_map.items():\n    \
+          \    normalized = re.sub(re.escape(variant), standard, normalized, flags=re.IGNORECASE)\n\
+          \n    # 3. 对抗清洗层 3: 去除文字间插入的干扰符号（如 顶_级、第*一、换季 烂 脸）\n    cleaned_for_match\
+          \ = re.sub(r'[\\s_\\-\\*#~@\\.\\/\\\\\\|\\+]+', '', normalized)\n\n    #\
+          \ 4. 高危广告法与行业黑词库\n    forbidden_rules = [\n        (r'国家级|世界级|最高级', '极限用语-国家级/顶级',\
+          \ '20 万元 ~ 100 万元'),\n        (r'第[一1壹]|全网第[一1壹]|销量第[一1壹]|排名第[一1壹]', '极限用语-第一绝对化',\
+          \ '20 万元 ~ 100 万元'),\n        (r'顶级|极品|极佳|绝无仅有|顶尖|史无前例', '极限用语-顶级绝对化', '20\
+          \ 万元 ~ 100 万元'),\n        (r'首[款个席选家]|全国首[发家个]|全网首[发个]', '绝对化宣称-首个/首款',\
+          \ '20 万元 ~ 100 万元'),\n        (r'100%有效|根除|根治|消炎|抗炎|药效|彻底解决|断根|换皮', '医疗/疗效绝对化宣称',\
+          \ '10 万元 ~ 100 万元（涉嫌非药品宣称疗效）'),\n        (r'全网最低|跳楼价|亏本甩卖|史上最低', '价格欺诈与绝对化比价',\
+          \ '5 万元 ~ 50 万元')\n    ]\n\n    matched_words = []\n    est_fines = []\n\
+          \n    # 5. 在去干扰文本中执行正则硬拦截\n    for pattern, reason, fine in forbidden_rules:\n\
+          \        found = re.findall(pattern, cleaned_for_match, flags=re.IGNORECASE)\n\
+          \        if found:\n            matched_words.extend(list(set(found)))\n\
+          \            est_fines.append(fine)\n\n    matched_words = list(dict.fromkeys(matched_words))\n\
+          \    violation_count = len(matched_words)\n    has_violation = violation_count\
+          \ > 0\n\n    if violation_count >= 2 or any('100 万元' in f for f in est_fines):\n\
+          \        risk_level = \"极高风险（触发顶格硬拦截）\"\n        est_fine = \"20 万元 ~ 100\
+          \ 万元（触发广告法第57条或涉及医疗功效严管）\"\n    elif violation_count == 1:\n        risk_level\
+          \ = \"中高风险（存在违法宣称）\"\n        est_fine = est_fines[0] if est_fines else\
+          \ \"20 万元 ~ 100 万元\"\n    else:\n        risk_level = \"合规/低风险\"\n     \
+          \   est_fine = \"0 元（未触发硬性法规拦截）\"\n\n    return {\n        \"has_violation\"\
+          : has_violation,\n        \"matched_words\": matched_words,\n        \"\
+          violation_count\": violation_count,\n        \"est_fine\": est_fine,\n \
+          \       \"risk_level\": risk_level\n    }"
+        code_language: python3
+        outputs:
+          est_fine:
+            children: null
+            type: string
+          has_violation:
+            children: null
+            type: boolean
+          matched_words:
+            children: null
+            type: array[string]
+          risk_level:
+            children: null
+            type: string
+          violation_count:
+            children: null
+            type: number
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1792217919107'
+          - raw_text
+          value_type: string
+          variable: text
+      height: 51
+      id: '1792218282500'
+      position:
+        x: 326.61786334912193
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 326.61786334912193
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - Cwni1ioDDNzYi1rtowjGcgP/XU4+SzjILHQoLRLLTcJpeYIIFDJ/qI2QLJ8/xiss
+        - QR/JJuazgz8pH15KxjXMIBQ8nzD1Ijq2W3IbavaOj2czTO7ZSfcwuRJBHUCkndtR
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: reranking_model
+          reranking_model:
+            model: netease-youdao/bce-reranker-base_v1
+            provider: langgenius/siliconflow/siliconflow
+          top_k: 4
+        query_attachment_selector: []
+        query_variable_selector:
+        - '1792217919107'
+        - raw_text
+        retrieval_mode: multiple
+        selected: false
+        title: 知识检索
+        type: knowledge-retrieval
+      height: 117
+      id: '1792218623590'
+      position:
+        x: 627.617863349122
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 627.617863349122
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 1c34d2cd-bf31-4218-bc02-2004f4581ce1
+            value: true
+            varType: boolean
+            variable_selector:
+            - '1792218282500'
+            - has_violation
+          logical_operator: and
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 147
+      id: '1792218688299'
+      position:
+        x: 928.617863349122
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 928.617863349122
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1792218623590'
+          - result
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: 49566dbf-b444-427a-b517-68a69338cf1a
+          role: system
+          text: "# Role\n你是一名资深电商广告法合规专家兼顶级商业文案操盘手，精通新媒体与电商全渠道营销心理学。\n\n# Input Context\n\
+            - 待审文案：{{#1792217919107.raw_text#}}\n- 目标发布渠道：{{#1792217919107.platform#}}\n\
+            - 商品所属类目：{{#1792217919107.category#}}\n- 代码引擎硬性拦截词{{#1792218282500.matched_words#}}\n\
+            - 预估行政罚款区间：{{#1792218282500.est_fine#}}\n- 法律依据知识库：{{#context#}}\n\n#\
+            \ Task\n请针对文案进行深度风控审计，并输出兼顾“合规免责”与“极高销售转化力”的专业报告。\n\n# Output Format\n\
+            请严格按照以下格式输出 Markdown：\n\n## \U0001F6A8 一、 营销合规风控诊断看板\n- **风险定级**：{{#1792218282500.risk_level#}}\n\
+            - **目标发布渠道**：{{#1792217919107.platform#}}\n- **代码硬性拦截违规项**：发{{#1792218282500.violation_count#}}处违禁词（包含：{{#1792218282500.matched_words#}}}\n\
+            - **预估潜在罚金测算**：**{{#1792218282500.est_fine#}}#**\n## \U0001F4CB 二、 违规点法律剖析与整改对照表\n\
+            | 违规词句 | 违规属性 | 违反法规/平台细则 | 处罚依据与后果 | 整改替换方向 |\n| :--- | :--- | :--- |\
+            \ :--- | :--- |\n(请结合知识库和代码结果，逐条拆解违规点)\n\n## ✍️ 三、 商业文案多维重构（A/B测试方案）\n\
+            *在完全剔除违规风险、符合【{{#1792217919107.platform#}}】社区调性的前提下，输出 3 种不同商业心理学风格的高转化版本：*\n\
+            \n### 风格 A：【成分极客 / 科学理性风】（适合高知理性消费者）\n(用严谨客观精密的说明文笔调，通过客观成分、工艺原理解释功效，不夸大但极具专业信服力)\n\
+            \n### 风格 B：【小红书场景 / 沉浸情绪风】（适合年轻种草受众）\n(通过细腻的生活场景描摹、视觉与触觉体验，不出现违规功效词，触及用户情感体验，唤醒强烈的渴望与画面感)\n\
+            \n### 风格 C：【痛点共鸣 / 情绪击穿风】（适合痛点型转化受众）\n(直击用户的痛点与困扰，用温和共情的笔触引导下单，完全合规避开医疗宣传)\n\
+            ---\n### 第四部分：下游系统集成数据（机器可读 JSON Schema）\n在报告的最末尾，你必须严格输出一个标准 ```json\
+            \ ``` 代码块，供下游业务系统（ERP / 飞书自动化卡片）直接解析，格式必须严格遵循以下结构（不要包含任何注释）：\n```json\n\
+            {\n  \"audit_summary\": {\n    \"risk_level\": \"极高风险 / 中高风险 / 低风险\",\n\
+            \    \"violation_detected\": true,\n    \"matched_words\": [\"违规词1\",\
+            \ \"违规词2\"],\n    \"est_fine\": \"罚金区间描述\",\n    \"action_required\":\
+            \ \"强制驳回修改 / 建议人工复核 / 自动放行\"\n  },\n  \"suggested_rewrites\": [\n    {\n\
+            \      \"style\": \"成分极客\",\n      \"copywriting\": \"对应风格的高转化合规文案\"\n\
+            \    },\n    {\n      \"style\": \"场景沉浸\",\n      \"copywriting\": \"\
+            对应风格的高转化合规文案\"\n    },\n    {\n      \"style\": \"痛点共鸣\",\n      \"copywriting\"\
+            : \"对应风格的高转化合规文案\"\n    }\n  ]\n}"
+        selected: false
+        title: Actor-文案创作Agent
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1792218775659'
+      position:
+        x: 1229.617863349122
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 1229.617863349122
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1792218623590'
+          - result
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 82ca8217-2920-43af-931c-46c2a7cad414
+          role: system
+          text: '# Role
+
+            你是一名资深电商合规与平台增长顾问。
+
+
+            # Task
+
+            用户提交的文案经过严格算法与知识库扫描，未命中任何《广告法》违禁词或平台违规项，评定为【绿色完全合规 🟢】。
+
+            待审文案：{{#1792217919107.raw_text#}}
+
+            目标发布渠道：{{#1792217919107.platform#}}}
+
+
+            # Output Format
+
+            请严格按照以下格式输出：
+
+
+            ## 🎉 恭喜！文案已通过合规安全初审
+
+            - **合规评定**：【绿色完全合规 🟢】
+
+            - **目标发布渠道**：{{#1792217919107.platform#}}
+
+            - **安全诊断**：系统未检索到任何硬性极限词、虚假功效或违规承诺表述，可安心排版发布。
+
+
+            ## 🚀 运营进阶：针对【{{#1792217919107.platform#}}}】平台的算法推荐提效建议
+
+            请结合该平台的最新推荐算法逻辑，针对这段文案，给出 2 条能进一步提升**点击率（CTR）**或**用户互动率**的专业运营优化小妙招。'
+        selected: false
+        title: LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1792219060973'
+      position:
+        x: 1229.617863349122
+        y: 402.67479455280017
+      positionAbsolute:
+        x: 1229.617863349122
+        y: 402.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        outputs:
+        - value_selector:
+          - '1792220907616'
+          - text
+          value_type: string
+          variable: result1
+        selected: false
+        title: 输出
+        type: end
+      height: 88
+      id: '1792219142935'
+      position:
+        x: 2130.6178633491218
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 2130.6178633491218
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        outputs:
+        - value_selector:
+          - '1792219060973'
+          - text
+          value_type: string
+          variable: result2
+        selected: false
+        title: 输出 2
+        type: end
+      height: 88
+      id: '1792219178732'
+      position:
+        x: 1530.617863349122
+        y: 402.67479455280017
+      positionAbsolute:
+        x: 1530.617863349122
+        y: 402.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1792218775659'
+          - text
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: Pro/deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: dbb64da5-cdbe-4d84-9a8f-8de83bde0a13
+          role: system
+          text: "# Role: 国家市场监管总局资深稽查法务 / 电商平台合规终审专家（Critic）\n\n## 你的核心任务\n你正在对初级文案生成的重构报告进行【二次法务终审与挑刺】。\n\
+            生成式 AI 在初次改写文案时，极容易“为了转化率而引入次生违规词”（例如悄悄带入：深层渗透、修护屏障、医美级、绝绝子、一秒吸收等隐形夸大）。你的职责是零容忍地揪出这些潜在风险。\n\
+            \n## 待审初稿内容：\n{{#context#}}\n\n## 审查重点维度（死磕隐形风险）：\n1. **次生绝对化词汇**：是否悄悄使用了“零负担、无死角、全方位、天花板、闭眼入、神仙产品”等违规用语？\n\
+            2. **隐形医疗与机理宣称**：普通化妆品是否变相宣称了“渗透肌底、修护皮肤屏障、消炎舒缓、换肤级、抗糖抗氧”等超出普通备案的机理？\n\
+            3. **时效与效果暗示**：是否隐晦承诺了见效周期（如“一抹即润、整日不干、立刻见效”）？\n4. **系统 JSON 校验**：文案末尾的\
+            \ JSON 结构是否完整可用？\n\n## 输出规范（严格执行）：\n请输出一份极具法务威慑力的【终审质检评估报告】，格式严格包含以下模块：\n\
+            \n### ⚖️ 法务终审裁决看板\n- **合规质检评分**：[0 ~ 100 分]（低于 90 分视为不合格，必须驳回修正）\n- **裁决结论**：[\
+            \ ✅ 准予放行 / ❌ 驳回靶向修正 ]\n- **隐形风险识别数**：[具体数量]\n\n### \U0001F50D 毒舌挑刺与次生违规清单（逐条列出）\n\
+            - **抓获疑点**：指出初稿改写中仍然带有夸大或暧昧宣称的词句\n- **法规漏洞**：解释为什么职业打假人或市监局会以此为由进行举报\n\
+            - **靶向整改指令**：明确要求必须替换掉的具体字词\n\n### \U0001F4CB 机器审校元数据（供下游 Refiner 读取）\n\
+            ```json\n{\n  \"audit_score\": 88,\n  \"is_approved\": false,\n  \"detected_secondary_risks\"\
+            : [\"抓获的词汇1\", \"抓获的词汇2\"],\n  \"refine_instructions\": \"具体的强制整改指导意见\"\
+            \n}"
+        selected: false
+        title: Critic-法务质检Agent
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1792220864992'
+      position:
+        x: 1530.617863349122
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 1530.617863349122
+        y: 276.67479455280017
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: Pro/deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: 67735690-606a-453c-a2e4-b365472129a8
+          role: system
+          text: '# Role: 电商风控与商业文案首席终审官（Refiner）
+
+            请严格吸纳 Critic 的法务挑刺批语，对 Actor 初稿进行靶向修正，消除隐形违规，输出一份终审报告。
+
+
+            必须严格输出以下 4 个部分：
+
+            1. 🛡️ 商业风控双智能体（Actor-Critic）终审通关看板（评分100，准予放行）
+
+            2. 🤖 Agent 内部自反思与二次修正对比表（表格对比：改写风格 | Actor初稿风险 | Critic挑刺批语 | Refiner终版修正点）
+
+            3. ✍️ 终审高转化合规文案（风格A成分极客、风格B小红书场景、风格C痛点共鸣）
+
+            4. 第四部分：下游系统终审集成数据（纯净 ```json ``` 代码块，包含 final_audit 和 final_copywriting）'
+        - id: 1c80059c-941e-4380-b523-8fdfabcba081
+          role: user
+          text: '请根据以下两份材料进行终审重构：
+
+
+            【材料 1：Actor 初稿】
+
+            {{#1792218775659.text#}}
+
+
+            【材料 2：Critic 法务意见】
+
+            {{#1792220864992.text#}}'
+        selected: false
+        title: Refiner-终审反思交付Agent
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1792220907616'
+      position:
+        x: 1830.617863349122
+        y: 276.67479455280017
+      positionAbsolute:
+        x: 1830.617863349122
+        y: 276.67479455280017
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    viewport:
+      x: 201.5224909346079
+      y: 197.48900852960418
+      zoom: 0.3837348818168623
+  rag_pipeline_variables: []
